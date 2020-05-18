@@ -1,0 +1,16 @@
+version: "3"
+services:
+  db:
+    image: mongo:latest
+    volumes:
+      - db-data:/data/db
+      - db-backups:/backups
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=jgmc3012
+      - MONGO_INITDB_ROOT_PASSWORD=Superpass
+
+volumes:
+  db-data:
+  db-backups:
