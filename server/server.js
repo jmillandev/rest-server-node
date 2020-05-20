@@ -7,16 +7,21 @@ const colors = require('colors')
 
 const app = express()
 
-app.use( express.static( __dirname + '/public' ) ) // Esta linea es para servir ficheros estaticos
+app.use(express.static(__dirname + '/public')) // Esta linea es para servir ficheros estaticos
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // Routes
-app.use( require('../routes/users') )
+app.use(require('../routes/users'))
 
-mongoose.connect('mongodb://localhost:27017/coffee')
-    .then(res => console.log('DB ONLINE'.green))
-    .catch(err => console.error(err))
+mongoose.connect(process.env.mongoUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then( _ => {
+    console.log('MongoDB is connected'.green)
+}).catch(err => {
+    console.log('MongoDB connection unsuccessful'.red, err)
+})
 
-app.listen(process.env.PORT, _ => console.log('Escuchando el puerto',`${process.env.PORT}`.green))
+app.listen(process.env.PORT, _ => console.log('Escuchando el puerto', `${process.env.PORT}`.green))
