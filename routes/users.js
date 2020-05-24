@@ -14,7 +14,7 @@ const raise_err = (err, status = 400) => res.status(status)
 app.get('/users/', (req, res) => {
     const offset = Number(req.query.offset) || 0
     const limit = Number(req.query.limit) || 5
-    const condition = { state: false }
+    const condition = { state: true }
     const fields = 'name email img'
 
     User.find(condition, fields)
