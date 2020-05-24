@@ -2,16 +2,13 @@ const User = require('../models/users')
 const express = require('express')
 const bcrypt = require('bcrypt')
 const _ = require('underscore')
+const { raise_err } = require('./utils')
+const { verifyToken } = require('../server/middlewares/authentication')
+const { isAdmin } = require('../server/middlewares/permissions')
+
 const app = express()
 
-const raise_err = (err, status = 400) => res.status(status)
-    .json({
-        success: false,
-        detail: err,
-    })
-
-
-app.get('/users/', (req, res) => {
+app.get('/users/', verifyToken, (req, res) => {
     const offset = Number(req.query.offset) || 0
     const limit = Number(req.query.limit) || 5
     const condition = { state: true }
@@ -21,9 +18,9 @@ app.get('/users/', (req, res) => {
         .skip(offset)
         .limit(limit)
         .exec((err, users) => {
-            if (err) return raise_err(err)
-            User.count(condition, (err, total) => {
-                if (err) return raise_err(err)
+            if (err) return raise_err(res, err)
+            User.countDocuments(condition, (err, total) => {
+                if (err) return raise_err(res ,err)
                 res.json({
                     success: true,
                     info: { users, offset, limit, total }
@@ -33,7 +30,7 @@ app.get('/users/', (req, res) => {
 })
 
 
-app.post('/users/', (req, res) => {
+app.post('/users/', [verifyToken, isAdmin], (req, res) => {
     let body = req.body
     let user = new User({
         ...body,
@@ -51,12 +48,12 @@ app.post('/users/', (req, res) => {
         }))
 })
 
-app.patch('/users/:user_id', (req, res) => {
+app.patch('/users/:user_id', [verifyToken, isAdmin], (req, res) => {
     const id = req.params.user_id
     let body = _.pick(req.body, ['name', 'email', 'img', 'role', 'state'])
 
     User.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, userDB) => {
-        if (err) return raise_err(err)
+        if (err) return raise_err(res, err)
         res.json({
             'success': true,
             'message': "User Updated",
@@ -66,12 +63,12 @@ app.patch('/users/:user_id', (req, res) => {
 
 })
 
-app.delete('/users/:user_id', (req, res) => {
+app.delete('/users/:user_id', [verifyToken, isAdmin], (req, res) => {
     const id = req.params.user_id
 
     // Remove hard
     // User.findByIdAndDelete(id, (err, userDeteled) => {
-    //     if (err) return raise_err(err)
+    //     if (err) return raise_err(res, err)
     //     res.json({
     //         'success': true,
     //         'message': "User Deleted",
@@ -83,7 +80,7 @@ app.delete('/users/:user_id', (req, res) => {
     const opts = { new: true }
 
     User.findByIdAndUpdate(id, body, opts, (err, user) => {
-        if (err) return raise_err(err)
+        if (err) return raise_err(res, err)
         res.json({
             'success': true,
             'message': "User Deleted",
