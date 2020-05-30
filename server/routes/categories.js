@@ -2,8 +2,8 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 
 const Category = require('../models/categories')
-const { verifyToken } = require('../server/middlewares/authentication')
-const { isAdmin } = require('../server/middlewares/permissions')
+const { verifyToken } = require('../middlewares/authentication')
+const { isAdmin } = require('../middlewares/permissions')
 const { raise_err } = require('../utils/errors')
 
 const app = express()
