@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const { raise_err } = require('../../routes/utils')
+const { raise_err } = require('../../utils/errors')
 
 const verifyToken = (req, res, next) => {
     const tokenNotFountErr = {message: "No se envio ningun token para verificar permisos."}

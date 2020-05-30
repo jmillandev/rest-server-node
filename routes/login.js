@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const User = require('../models/users')
-const { raise_err } = require('./utils')
+const { raise_err } = require('../utils/errors')
 
 const app = express()
 
