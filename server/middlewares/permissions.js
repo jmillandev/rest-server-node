@@ -1,4 +1,4 @@
-const { raise_err } = require('../../utils/errors')
+const { raise_err } = require('../utils/errors')
 
 const isAdmin = (req, res, next) => {
     if (!req.user.role == 'ADMIN_ROLE') {
